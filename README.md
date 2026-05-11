@@ -41,12 +41,15 @@ HUGGINGFACEHUB_API_TOKEN=hf_your_new_token
 HF_HOME=D:/Cache/huggingface
 EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 LLM_MODEL=Qwen/Qwen2.5-72B-Instruct
-CHROMA_PERSIST_DIR=./chroma_db
 DATABASE_URL=postgresql://user:password@host:5432/dbname
 
 FRONTEND_ORIGINS=http://localhost:5173
 ALLOW_LOCALHOST_CORS=true
 ```
+
+Notes:
+- This project uses **Postgres/PGVector** (`DATABASE_URL`) for vector storage.
+- Share real token and DB URL privately (do not commit them).
 
 Run backend:
 

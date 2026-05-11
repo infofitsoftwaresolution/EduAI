@@ -24,6 +24,10 @@ RAG SYSTEM HANDOFF (LOCAL TEST)
 - FRONTEND_ORIGINS=http://localhost:5173
 - ALLOW_LOCALHOST_CORS=true
 
+Note:
+- Vector storage is Postgres/PGVector via DATABASE_URL (not Chroma).
+- I will share actual token and DB URL separately (private).
+
 4) Current integrated features
 - Frontend chat connected to backend /ask
 - Session open/new/delete from sidebar
