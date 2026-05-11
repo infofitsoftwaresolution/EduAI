@@ -1,0 +1,38 @@
+RAG SYSTEM HANDOFF (LOCAL TEST)
+
+1) Install and run backend
+- Open terminal in project root
+- Create/activate venv
+  - python -m venv venv
+  - .\venv\Scripts\Activate.ps1   (PowerShell)
+- pip install -r requirements.txt
+- Create root .env (see .env.example)
+- python run.py
+
+2) Install and run frontend
+- Open terminal in frontend folder
+- npm install
+- Create frontend/.env with:
+  VITE_API_BASE_URL=http://localhost:8000
+- npm run dev
+- Open http://localhost:5173
+
+3) Required env values (backend)
+- HUGGINGFACEHUB_API_TOKEN=hf_...
+- DATABASE_URL=postgresql://...
+- LLM_MODEL=Qwen/Qwen2.5-72B-Instruct
+- FRONTEND_ORIGINS=http://localhost:5173
+- ALLOW_LOCALHOST_CORS=true
+
+4) Current integrated features
+- Frontend chat connected to backend /ask
+- Session open/new/delete from sidebar
+- Session titles generated from first user query
+- Typing indicator while waiting for backend response
+- In-app toast confirmation for session deletion
+
+5) Important
+- Do NOT commit/share real API tokens in git/chat
+- If model errors happen, verify token/model/provider availability first
+- Swagger test URL: http://localhost:8000/docs
+
