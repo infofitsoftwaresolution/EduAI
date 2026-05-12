@@ -7,6 +7,12 @@ venv/
 __pycache__/
 *.pyc
 
+# Legacy local vector store (app uses PGVector + Postgres)
+chroma_db/
+
+# Uploaded course files (created at runtime; do not commit)
+data/
+
 frontend/node_modules/
 frontend/dist/
 frontend/.env

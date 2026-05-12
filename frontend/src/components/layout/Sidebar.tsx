@@ -1,5 +1,6 @@
 import { useChatStore } from "../../store/useChatStore";
 import { cn } from "../../lib/utils";
+import { Link } from "react-router-dom";
 import {
   MessageSquare,
   History,
@@ -11,6 +12,7 @@ import {
   Terminal,
   Trophy,
   Trash2,
+  Shield,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -167,6 +169,20 @@ const Sidebar = ({
             )}
           </div>
         </div>
+      </div>
+
+      <div className="px-4 pb-4">
+        <Link
+          to="/admin"
+          className={cn(
+            "w-full flex items-center gap-3 p-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 text-indigo-100 hover:bg-indigo-500/15 hover:border-indigo-500/35 transition-colors",
+            !isSidebarOpen && "justify-center"
+          )}
+          title="Admin panel"
+        >
+          <Shield className="w-5 h-5 text-indigo-300 shrink-0" />
+          {isSidebarOpen && <span className="text-sm font-medium">Admin panel</span>}
+        </Link>
       </div>
 
       <div className="p-4 border-t border-white/5">

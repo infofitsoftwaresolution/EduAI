@@ -20,6 +20,9 @@ class QueryRequest(BaseModel):
     question: str
     top_k: int = 4
     session_id: Optional[str] = "default"   # frontend passes this
+    # When set, retrieval is limited to chunks ingested under that course (and section if provided).
+    course_id: Optional[str] = None
+    section_id: Optional[str] = None
 
 
 PROMPT_TEMPLATE = """
@@ -55,6 +58,18 @@ def get_history(session_id: str) -> str:
     return "\n".join(lines)
 
 
+def _retriever_filter(course_id: Optional[str], section_id: Optional[str]) -> Optional[dict]:
+    cid = (course_id or "").strip()
+    sid = (section_id or "").strip()
+    if sid:
+        if not cid:
+            raise ValueError("section_id requires course_id")
+        return {"course_id": cid, "section_id": sid}
+    if cid:
+        return {"course_id": cid}
+    return None
+
+
 def save_to_history(session_id: str, question: str, answer: str):
     if session_id not in session_store:
         session_store[session_id] = []
@@ -67,11 +82,16 @@ def save_to_history(session_id: str, question: str, answer: str):
 @router.post("/", summary="Ask a question against the knowledge base")
 async def ask_question(payload: QueryRequest):
     try:
+        filt = _retriever_filter(payload.course_id, payload.section_id)
         vs = get_vectorstore()
+
+        search_kwargs: dict = {"k": payload.top_k}
+        if filt is not None:
+            search_kwargs["filter"] = filt
 
         retriever = vs.as_retriever(
             search_type="mmr",
-            search_kwargs={"k": payload.top_k}
+            search_kwargs=search_kwargs,
         )
 
         prompt = PromptTemplate(
@@ -107,15 +127,20 @@ async def ask_question(payload: QueryRequest):
             "answer": answer.strip(),
             "sources": [
                 {
-                    "filename": doc.metadata.get("source", "unknown").split("\\")[-1].split("/")[-1],
+                    "filename": (
+                        doc.metadata.get("label")
+                        or doc.metadata.get("source", "unknown")
+                    ).split("\\")[-1].split("/")[-1],
                     "page": doc.metadata.get("page", "—"),
-                    "preview": doc.page_content[:200]
+                    "preview": doc.page_content[:200],
                 }
                 for doc in retrieved_docs
             ],
-            "total_sources": len(retrieved_docs)
+            "total_sources": len(retrieved_docs),
         }
 
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

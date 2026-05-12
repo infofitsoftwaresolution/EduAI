@@ -4,6 +4,9 @@ export interface AskRequest {
   question: string;
   session_id: string;
   top_k?: number;
+  /** When set, retrieval uses only chunks ingested under this course (and section if provided). */
+  course_id?: string | null;
+  section_id?: string | null;
 }
 
 export interface AskSource {
