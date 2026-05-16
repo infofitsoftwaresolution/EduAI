@@ -28,10 +28,16 @@ const getWelcomeMessage = (): Message => ({
   timestamp: new Date(),
 });
 
+// On mobile we start with the drawer closed so it doesn't cover the chat on first paint.
+const getInitialSidebarOpen = (): boolean => {
+  if (typeof window === "undefined") return true;
+  return window.matchMedia("(min-width: 768px)").matches;
+};
+
 export const useChatStore = create<ChatState>((set) => ({
   messages: [getWelcomeMessage()],
   isLoading: false,
-  isSidebarOpen: true,
+  isSidebarOpen: getInitialSidebarOpen(),
   currentTopic: "General Learning",
   addMessage: (message) =>
     set((state) => ({

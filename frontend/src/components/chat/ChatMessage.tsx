@@ -40,30 +40,30 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, isStreaming }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       className={cn(
-        "flex w-full mb-8 group",
+        "flex w-full mb-6 md:mb-8 group",
         isAI ? "justify-start" : "justify-end"
       )}
     >
       <div className={cn(
-        "flex max-w-[85%] gap-4",
+        "flex max-w-[92%] md:max-w-[85%] gap-2.5 md:gap-4 min-w-0",
         isAI ? "flex-row" : "flex-row-reverse"
       )}>
         {/* Avatar */}
         <div className={cn(
-          "w-10 h-10 rounded-2xl flex-shrink-0 flex items-center justify-center border shadow-xl transition-transform duration-300 group-hover:scale-105",
-          isAI 
-            ? "bg-gradient-to-br from-indigo-500/20 to-purple-600/20 border-indigo-500/30 text-indigo-500" 
+          "w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl flex-shrink-0 flex items-center justify-center border shadow-xl transition-transform duration-300 group-hover:scale-105",
+          isAI
+            ? "bg-gradient-to-br from-indigo-500/20 to-purple-600/20 border-indigo-500/30 text-indigo-500"
             : "bg-gradient-to-br from-zinc-700 to-zinc-900 border-zinc-600/50 text-white"
         )}>
-          {isAI ? <Zap className="w-5 h-5" /> : <User className="w-5 h-5" />}
+          {isAI ? <Zap className="w-4 h-4 md:w-5 md:h-5" /> : <User className="w-4 h-4 md:w-5 md:h-5" />}
         </div>
 
         {/* Content */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 min-w-0 flex-1">
           <div className={cn(
-            "p-5 rounded-[2rem] shadow-2xl relative overflow-hidden",
-            isAI 
-              ? "bg-card/40 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-tl-none" 
+            "p-3.5 md:p-5 rounded-2xl md:rounded-[2rem] shadow-2xl relative overflow-hidden",
+            isAI
+              ? "bg-card/40 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-tl-none"
               : "bg-primary text-primary-foreground rounded-tr-none"
           )}>
             {/* Background Glow for AI */}
@@ -71,7 +71,7 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, isStreaming }) => {
               <div className="absolute -top-24 -left-24 w-48 h-48 bg-indigo-500/5 blur-[80px] pointer-events-none" />
             )}
 
-            <div className="prose prose-zinc dark:prose-invert max-w-none text-[15px] leading-relaxed">
+            <div className="prose prose-zinc dark:prose-invert max-w-none text-sm md:text-[15px] leading-relaxed break-words">
               <ReactMarkdown
                 components={{
                   code({ node, inline, className, children, ...props }: any) {
@@ -126,17 +126,17 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, isStreaming }) => {
 
           {/* Actions for AI */}
           {isAI && (
-            <div className="flex items-center gap-3 ml-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <button className="p-2 rounded-xl hover:bg-muted/50 transition-colors text-muted-foreground hover:text-indigo-400">
+            <div className="flex items-center gap-1.5 md:gap-3 ml-1 md:ml-2 mt-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
+              <button className="p-1.5 md:p-2 rounded-xl hover:bg-muted/50 transition-colors text-muted-foreground hover:text-indigo-400">
                 <RefreshCcw className="w-3.5 h-3.5" />
               </button>
-              <button className="p-2 rounded-xl hover:bg-muted/50 transition-colors text-muted-foreground hover:text-indigo-400">
+              <button className="p-1.5 md:p-2 rounded-xl hover:bg-muted/50 transition-colors text-muted-foreground hover:text-indigo-400">
                 <ThumbsUp className="w-3.5 h-3.5" />
               </button>
-              <button className="p-2 rounded-xl hover:bg-muted/50 transition-colors text-muted-foreground hover:text-indigo-400">
+              <button className="p-1.5 md:p-2 rounded-xl hover:bg-muted/50 transition-colors text-muted-foreground hover:text-indigo-400">
                 <ThumbsDown className="w-3.5 h-3.5" />
               </button>
-              <span className="text-[10px] text-muted-foreground/50 ml-auto mr-2 uppercase tracking-widest font-bold">
+              <span className="text-[9px] md:text-[10px] text-muted-foreground/50 ml-auto mr-1 md:mr-2 uppercase tracking-widest font-bold">
                 {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>

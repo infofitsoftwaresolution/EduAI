@@ -314,13 +314,13 @@ function ChatPage() {
         onDeleteSession={handleDeleteSession}
       />
 
-      <main className="flex-1 flex flex-col relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <main className="flex-1 flex flex-col relative overflow-hidden min-w-0">
+        <div className="absolute top-0 right-0 w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] bg-purple-500/5 blur-[120px] rounded-full pointer-events-none" />
 
         <TopHeader />
 
-        <div className="flex-1 overflow-y-auto px-4 md:px-12 py-8 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto px-3 md:px-12 py-4 md:py-8 scrollbar-hide">
           <div className="max-w-4xl mx-auto">
             <AnimatePresence initial={false}>
               {messages.map((msg) => (

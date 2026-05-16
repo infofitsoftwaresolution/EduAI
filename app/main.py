@@ -4,15 +4,23 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import ALLOW_LOCALHOST_CORS, FRONTEND_ORIGINS
+from app.config import ALLOW_LOCALHOST_CORS, FRONTEND_ORIGINS, cors_allow_origins
 from app.db.models import Base
+from app.db.schema_upgrade import ensure_schema
 from app.db.session import engine
 from app.routes import courses, query
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     Base.metadata.create_all(bind=engine)
+    try:
+        ensure_schema()
+    except Exception:
+        logger.exception("Schema upgrade failed — check DATABASE_URL and permissions")
+        raise
     yield
 
 
@@ -28,9 +36,11 @@ if not FRONTEND_ORIGINS:
         "FRONTEND_ORIGINS is empty: set it to your Vercel URL(s) on Render or browser requests will fail CORS."
     )
 
+_cors_origins = cors_allow_origins()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=FRONTEND_ORIGINS,
+    allow_origins=_cors_origins,
     allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$" if ALLOW_LOCALHOST_CORS else None,
     allow_credentials=True,
     allow_methods=["*"],

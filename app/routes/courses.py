@@ -6,7 +6,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.db.models import Course, KnowledgeAsset, Section
@@ -89,6 +89,11 @@ class CourseOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class CourseListItemOut(CourseOut):
+    module_count: int = 0
+    file_count: int = 0
+
+
 class SectionCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=512)
     position: int = 0
@@ -109,6 +114,8 @@ class AssetOut(BaseModel):
     source_type: str
     label: str
     chunks_count: int
+    status: str = "ready"
+    error_message: str | None = None
     model_config = {"from_attributes": True}
 
 
@@ -128,10 +135,26 @@ def create_course(payload: CourseCreate, db: Session = Depends(get_db)):
     return CourseOut.model_validate(c)
 
 
-@router.get("", summary="List courses")
+@router.get("", summary="List courses with module and file counts")
 def list_courses(db: Session = Depends(get_db)):
     rows = db.scalars(select(Course).order_by(Course.created_at.desc())).all()
-    return [CourseOut.model_validate(r) for r in rows]
+    result: list[CourseListItemOut] = []
+    for c in rows:
+        module_count = db.scalar(
+            select(func.count()).select_from(Section).where(Section.course_id == c.id)
+        ) or 0
+        file_count = db.scalar(
+            select(func.count()).select_from(KnowledgeAsset).where(KnowledgeAsset.course_id == c.id)
+        ) or 0
+        base = CourseOut.model_validate(c)
+        result.append(
+            CourseListItemOut(
+                **base.model_dump(),
+                module_count=module_count,
+                file_count=file_count,
+            )
+        )
+    return result
 
 
 @router.get("/{course_id}", summary="Get course with sections")
@@ -234,9 +257,12 @@ async def ingest_file_to_section(
         label=label,
         storage_path=None,
         chunks_count=0,
+        status="processing",
+        error_message=None,
     )
     db.add(asset)
-    db.flush()
+    db.commit()
+    db.refresh(asset)
 
     rel_dir = os.path.join(str(course_id), str(section_id))
     disk_name = f"{asset.id}_{_safe_filename(filename)}"
@@ -258,9 +284,12 @@ async def ingest_file_to_section(
 
         asset.storage_path = rel_path.replace("\\", "/")
         asset.chunks_count = len(chunks)
+        asset.status = "ready"
+        asset.error_message = None
         db.commit()
         db.refresh(asset)
     except Exception as e:
+        err = str(e)
         try:
             delete_embeddings_for_document_ids([str(asset.id)])
         except Exception:
@@ -270,8 +299,12 @@ async def ingest_file_to_section(
                 os.remove(abs_path)
             except OSError:
                 pass
-        db.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+        asset.status = "failed"
+        asset.error_message = err[:2000]
+        asset.chunks_count = 0
+        db.commit()
+        db.refresh(asset)
+        raise HTTPException(status_code=500, detail=err)
 
     return {
         "message": "File ingested successfully",
@@ -293,9 +326,12 @@ def ingest_url_to_section(course_id: UUID, section_id: UUID, payload: UrlIngestB
         label=label,
         storage_path=None,
         chunks_count=0,
+        status="processing",
+        error_message=None,
     )
     db.add(asset)
-    db.flush()
+    db.commit()
+    db.refresh(asset)
 
     try:
         docs = load_url(url)
@@ -304,15 +340,22 @@ def ingest_url_to_section(course_id: UUID, section_id: UUID, payload: UrlIngestB
         vs = get_vectorstore()
         vs.add_documents(chunks)
         asset.chunks_count = len(chunks)
+        asset.status = "ready"
+        asset.error_message = None
         db.commit()
         db.refresh(asset)
     except Exception as e:
+        err = str(e)
         try:
             delete_embeddings_for_document_ids([str(asset.id)])
         except Exception:
             pass
-        db.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+        asset.status = "failed"
+        asset.error_message = err[:2000]
+        asset.chunks_count = 0
+        db.commit()
+        db.refresh(asset)
+        raise HTTPException(status_code=500, detail=err)
 
     return {
         "message": "URL ingested successfully",

@@ -87,6 +87,15 @@
   @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/40 transition-colors;
 }
 
+/* Utility: visually hide scrollbar (still scrollable) */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE / Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome / Safari / Opera */
+}
+
 /* Animations */
 @keyframes float {
   0% { transform: translateY(0px); }

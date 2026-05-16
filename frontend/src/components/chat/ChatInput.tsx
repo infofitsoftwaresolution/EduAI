@@ -1,16 +1,16 @@
-import { useState, useRef, useEffect, type FC } from 'react';
-import { 
-  Mic, 
-  Paperclip, 
-  Sparkles, 
+import { useState, useRef, useEffect, type FC } from "react";
+import {
+  Mic,
+  Paperclip,
+  Sparkles,
   ArrowUp,
   Brain,
   Code,
   HelpCircle,
-  Zap
-} from 'lucide-react';
-import { cn } from '../../lib/utils';
-import { motion } from 'framer-motion';
+  Zap,
+} from "lucide-react";
+import { cn } from "../../lib/utils";
+import { motion } from "framer-motion";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -18,7 +18,7 @@ interface ChatInputProps {
 }
 
 const ChatInput: FC<ChatInputProps> = ({ onSend, isLoading }) => {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const actionChips = [
@@ -31,12 +31,12 @@ const ChatInput: FC<ChatInputProps> = ({ onSend, isLoading }) => {
   const handleSend = () => {
     if (input.trim() && !isLoading) {
       onSend(input);
-      setInput('');
+      setInput("");
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -44,15 +44,15 @@ const ChatInput: FC<ChatInputProps> = ({ onSend, isLoading }) => {
 
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
     }
   }, [input]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 pb-8 space-y-4">
-      {/* Action Chips */}
-      <div className="flex flex-wrap gap-2 justify-center">
+    <div className="w-full max-w-4xl mx-auto p-3 md:p-6 pb-4 md:pb-8 space-y-3 md:space-y-4">
+      {/* Action Chips: horizontally scrollable on mobile, wrapped on desktop */}
+      <div className="flex md:flex-wrap gap-2 justify-start md:justify-center overflow-x-auto scrollbar-hide -mx-1 px-1 snap-x">
         {actionChips.map((chip) => (
           <motion.button
             key={chip.label}
@@ -60,7 +60,7 @@ const ChatInput: FC<ChatInputProps> = ({ onSend, isLoading }) => {
             whileTap={{ scale: 0.95 }}
             onClick={() => setInput(chip.label)}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-2xl glass-card text-xs font-medium transition-all group",
+              "flex items-center gap-2 px-3 md:px-4 py-2 rounded-2xl glass-card text-[11px] md:text-xs font-medium transition-all group whitespace-nowrap snap-start shrink-0",
               chip.color
             )}
           >
@@ -72,13 +72,19 @@ const ChatInput: FC<ChatInputProps> = ({ onSend, isLoading }) => {
 
       {/* Input Box */}
       <div className="relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-[2.5rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
-        
-        <div className={cn(
-          "relative flex items-end gap-2 p-4 rounded-[2rem] glass-card shadow-2xl transition-all border-white/10 dark:border-white/5",
-          isLoading && "opacity-80"
-        )}>
-          <button className="p-3 rounded-2xl hover:bg-muted/50 transition-colors text-muted-foreground flex-shrink-0">
+        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-[2rem] md:rounded-[2.5rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+
+        <div
+          className={cn(
+            "relative flex items-end gap-1.5 md:gap-2 p-2 md:p-4 rounded-2xl md:rounded-[2rem] glass-card shadow-2xl transition-all border-white/10 dark:border-white/5",
+            isLoading && "opacity-80"
+          )}
+        >
+          <button
+            type="button"
+            className="hidden sm:flex p-2.5 md:p-3 rounded-xl md:rounded-2xl hover:bg-muted/50 transition-colors text-muted-foreground flex-shrink-0"
+            aria-label="Attach file"
+          >
             <Paperclip className="w-5 h-5" />
           </button>
 
@@ -90,18 +96,24 @@ const ChatInput: FC<ChatInputProps> = ({ onSend, isLoading }) => {
             onKeyDown={handleKeyDown}
             placeholder="Ask me anything about IT..."
             disabled={isLoading}
-            className="w-full bg-transparent border-none focus:ring-0 resize-none py-3 px-2 text-[15px] max-h-[200px] scrollbar-hide placeholder:text-muted-foreground/50"
+            className="w-full bg-transparent border-none focus:ring-0 resize-none py-2.5 md:py-3 px-2 text-[14px] md:text-[15px] max-h-[160px] md:max-h-[200px] scrollbar-hide placeholder:text-muted-foreground/50 outline-none"
           />
 
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <button className="p-3 rounded-2xl hover:bg-muted/50 transition-colors text-muted-foreground">
+          <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+            <button
+              type="button"
+              className="hidden sm:flex p-2.5 md:p-3 rounded-xl md:rounded-2xl hover:bg-muted/50 transition-colors text-muted-foreground"
+              aria-label="Voice input"
+            >
               <Mic className="w-5 h-5" />
             </button>
             <button
+              type="button"
               onClick={handleSend}
               disabled={!input.trim() || isLoading}
+              aria-label="Send message"
               className={cn(
-                "p-3 rounded-2xl transition-all ai-glow flex items-center justify-center",
+                "p-2.5 md:p-3 rounded-xl md:rounded-2xl transition-all ai-glow flex items-center justify-center",
                 input.trim() && !isLoading
                   ? "bg-primary text-primary-foreground scale-100"
                   : "bg-muted text-muted-foreground scale-90 opacity-50"
@@ -116,13 +128,17 @@ const ChatInput: FC<ChatInputProps> = ({ onSend, isLoading }) => {
           </div>
         </div>
 
-        {/* Shortcuts Info */}
-        <div className="flex items-center justify-between px-6 mt-3">
+        {/* Shortcuts Info: hide on small screens to save vertical space */}
+        <div className="hidden md:flex items-center justify-between px-6 mt-3">
           <div className="flex items-center gap-4">
-             <div className="flex items-center gap-1.5 opacity-40">
-              <div className="px-1.5 py-0.5 rounded-md border border-white/20 bg-white/5 text-[10px] font-bold">Shift</div>
+            <div className="flex items-center gap-1.5 opacity-40">
+              <div className="px-1.5 py-0.5 rounded-md border border-white/20 bg-white/5 text-[10px] font-bold">
+                Shift
+              </div>
               <span className="text-[10px]">+</span>
-              <div className="px-1.5 py-0.5 rounded-md border border-white/20 bg-white/5 text-[10px] font-bold">Enter</div>
+              <div className="px-1.5 py-0.5 rounded-md border border-white/20 bg-white/5 text-[10px] font-bold">
+                Enter
+              </div>
               <span className="text-[10px] ml-1">New Line</span>
             </div>
           </div>

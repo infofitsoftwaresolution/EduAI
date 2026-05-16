@@ -16,7 +16,11 @@ export interface Course {
   id: string;
   title: string;
   description: string | null;
+  module_count?: number;
+  file_count?: number;
 }
+
+export type AssetStatus = "processing" | "ready" | "failed";
 
 export interface Section {
   id: string;
@@ -32,6 +36,8 @@ export interface Asset {
   source_type: string;
   label: string;
   chunks_count: number;
+  status: AssetStatus;
+  error_message?: string | null;
 }
 
 export interface CourseDetailResponse {

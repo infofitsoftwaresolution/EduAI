@@ -25,3 +25,20 @@ ALLOW_LOCALHOST_CORS = os.getenv("ALLOW_LOCALHOST_CORS", "true").strip().lower()
     "yes",
     "on",
 }
+
+_LOCAL_DEV_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+]
+
+
+def cors_allow_origins() -> list[str]:
+    """Origins passed to CORSMiddleware (explicit list is more reliable than regex alone)."""
+    merged = list(FRONTEND_ORIGINS)
+    if ALLOW_LOCALHOST_CORS:
+        for origin in _LOCAL_DEV_ORIGINS:
+            if origin not in merged:
+                merged.append(origin)
+    return merged
