@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+import { notifyError, notifySuccess } from "../../lib/notify";
 import { motion } from "framer-motion";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { Skeleton } from "../../components/ui/Skeleton";
@@ -25,7 +25,7 @@ function AdminCoursesList({ onLogout }: AdminCoursesListProps) {
     try {
       setCourses(await listCourses());
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to load courses");
+      notifyError(e instanceof Error ? e.message : "Failed to load courses");
     } finally {
       setLoading(false);
     }
@@ -44,10 +44,10 @@ function AdminCoursesList({ onLogout }: AdminCoursesListProps) {
       await createCourse(title);
       setNewTitle("");
       setShowForm(false);
-      toast.success("Course created.");
+      notifySuccess("Course created.");
       await load();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to create course");
+      notifyError(err instanceof Error ? err.message : "Failed to create course");
     } finally {
       setCreating(false);
     }

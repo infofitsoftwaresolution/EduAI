@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { toast } from "react-toastify";
+import { notifyError, notifySuccess } from "../../lib/notify";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { PageMotion } from "../../components/ui/PageMotion";
 import { cn } from "../../lib/utils";
@@ -29,9 +29,9 @@ function AdminSettingsPage({ onLogout }: AdminSettingsPageProps) {
       const [h, root] = await Promise.all([fetchHealth(), fetchRoot()]);
       setHealth(h);
       setRootPayload(root);
-      toast.success("API is reachable.");
+      notifySuccess("API is reachable.");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Health check failed");
+      notifyError(e instanceof Error ? e.message : "Health check failed");
     } finally {
       setHealthLoading(false);
     }

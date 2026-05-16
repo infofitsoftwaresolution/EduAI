@@ -125,11 +125,7 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
-.Toastify__progress-bar,
-.Toastify__progress-bar--animated,
-.Toastify__progress-bar--controlled {
-  display: none !important;
-}
+/* Progress bar hidden via ToastContainer hideProgressBar (do not use display:none — breaks auto-close timer). */
 .Toastify__toast--success.eduai-toast {
   @apply bg-emerald-950/90 text-emerald-50;
 }

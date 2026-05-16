@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import { notifyError, notifySuccess } from "../../lib/notify";
 import AdminLayout from "../../components/admin/AdminLayout";
 import AssetStatusBadge, { assetStatusClass } from "../../components/admin/AssetStatusBadge";
 import { cn } from "../../lib/utils";
@@ -66,7 +66,7 @@ function AdminCourseWorkspace({ onLogout }: AdminCourseWorkspaceProps) {
         return data.sections[0]?.id ?? null;
       });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to load course");
+      notifyError(e instanceof Error ? e.message : "Failed to load course");
       navigate("/admin");
     } finally {
       setLoading(false);
@@ -86,7 +86,7 @@ function AdminCourseWorkspace({ onLogout }: AdminCourseWorkspaceProps) {
     try {
       setAssets(await listAssets(courseId, selectedSectionId));
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to load files");
+      notifyError(e instanceof Error ? e.message : "Failed to load files");
     } finally {
       setAssetsLoading(false);
     }
@@ -105,12 +105,12 @@ function AdminCourseWorkspace({ onLogout }: AdminCourseWorkspaceProps) {
     try {
       const sec = await createSection(courseId, title, sections.length);
       setNewModuleTitle("");
-      toast.success("Module added.");
+      notifySuccess("Module added.");
       const data = await getCourse(courseId);
       setSections(data.sections);
       setSelectedSectionId(sec.id);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to add module");
+      notifyError(err instanceof Error ? err.message : "Failed to add module");
     } finally {
       setMutating(false);
     }
@@ -122,10 +122,10 @@ function AdminCourseWorkspace({ onLogout }: AdminCourseWorkspaceProps) {
     setMutating(true);
     try {
       await deleteCourse(courseId);
-      toast.success("Course deleted.");
+      notifySuccess("Course deleted.");
       navigate("/admin");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to delete course");
+      notifyError(err instanceof Error ? err.message : "Failed to delete course");
     } finally {
       setMutating(false);
     }
@@ -138,10 +138,10 @@ function AdminCourseWorkspace({ onLogout }: AdminCourseWorkspaceProps) {
     setMutating(true);
     try {
       await deleteSection(courseId, sectionId);
-      toast.success("Module deleted.");
+      notifySuccess("Module deleted.");
       await loadCourse();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to delete module");
+      notifyError(err instanceof Error ? err.message : "Failed to delete module");
     } finally {
       setMutating(false);
     }
@@ -149,17 +149,17 @@ function AdminCourseWorkspace({ onLogout }: AdminCourseWorkspaceProps) {
 
   const handleFile = async (file: File | undefined) => {
     if (!file || !courseId || !selectedSectionId) {
-      toast.error("Select a module first.");
+      notifyError("Select a module first.");
       return;
     }
     setUploadLoading(true);
     try {
       const res = await ingestFileToSection(courseId, selectedSectionId, file);
-      toast.success(`Uploaded — ${res.chunks_added} chunks indexed.`);
+      notifySuccess(`Uploaded — ${res.chunks_added} chunks indexed.`);
       if (fileInputRef.current) fileInputRef.current.value = "";
       await loadAssets();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Upload failed");
+      notifyError(e instanceof Error ? e.message : "Upload failed");
       await loadAssets();
     } finally {
       setUploadLoading(false);
@@ -173,11 +173,11 @@ function AdminCourseWorkspace({ onLogout }: AdminCourseWorkspaceProps) {
     setUrlLoading(true);
     try {
       const res = await ingestUrlToSection(courseId, selectedSectionId, trimmed);
-      toast.success(`Link added — ${res.chunks_added} chunks indexed.`);
+      notifySuccess(`Link added — ${res.chunks_added} chunks indexed.`);
       setUrl("");
       await loadAssets();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "URL ingest failed");
+      notifyError(err instanceof Error ? err.message : "URL ingest failed");
       await loadAssets();
     } finally {
       setUrlLoading(false);
@@ -190,10 +190,10 @@ function AdminCourseWorkspace({ onLogout }: AdminCourseWorkspaceProps) {
     setMutating(true);
     try {
       await deleteAsset(courseId, selectedSectionId, assetId);
-      toast.success("File removed.");
+      notifySuccess("File removed.");
       await loadAssets();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Delete failed");
+      notifyError(err instanceof Error ? err.message : "Delete failed");
     } finally {
       setMutating(false);
     }
@@ -337,7 +337,7 @@ function AdminCourseWorkspace({ onLogout }: AdminCourseWorkspaceProps) {
                       void navigator.clipboard.writeText(
                         `${window.location.origin}${studentLink}`
                       );
-                      toast.success("Student chat link copied.");
+                      notifySuccess("Student chat link copied.");
                     }}
                     className="text-xs text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1 shrink-0"
                   >

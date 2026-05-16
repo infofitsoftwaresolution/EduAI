@@ -1,11 +1,17 @@
+import { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import AdminAuthGate from "./components/admin/AdminAuthGate";
 import ChatAuthGate from "./components/chat/ChatAuthGate";
+import { dismissAllToasts } from "./lib/notify";
 import LoginPage from "./pages/LoginPage";
 
 function App() {
   const location = useLocation();
+
+  useEffect(() => {
+    dismissAllToasts();
+  }, [location.pathname]);
 
   return (
     <AnimatePresence mode="wait">

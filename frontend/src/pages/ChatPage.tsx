@@ -15,6 +15,7 @@ import {
 } from "../services/chatService";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { notifyError, notifySuccess } from "../lib/notify";
 import ChatPageSkeleton from "../components/chat/ChatPageSkeleton";
 
 const ACTIVE_SESSION_KEY = "rag_active_session_id";
@@ -186,7 +187,7 @@ function ChatPage() {
       setErrorMessage("");
       await refreshSessionList();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not create chat");
+      notifyError(e instanceof Error ? e.message : "Could not create chat");
     } finally {
       setLoading(false);
     }
@@ -233,7 +234,7 @@ function ChatPage() {
       }
     }
 
-    toast.success("Chat deleted");
+    notifySuccess("Chat deleted");
   };
 
   const handleDeleteSession = (sessionId: string) => {

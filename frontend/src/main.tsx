@@ -3,7 +3,8 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
-import { ToastContainer } from 'react-toastify'
+import { Slide, ToastContainer } from 'react-toastify'
+import { TOAST_AUTO_CLOSE_MS, toastOptions } from './lib/notify'
 import 'react-toastify/dist/ReactToastify.css'
 
 createRoot(document.getElementById('root')!).render(
@@ -12,18 +13,16 @@ createRoot(document.getElementById('root')!).render(
       <App />
       <ToastContainer
         position="top-right"
-        autoClose={2200}
-        hideProgressBar
+        autoClose={TOAST_AUTO_CLOSE_MS}
+        transition={Slide}
         newestOnTop
-        closeOnClick
-        pauseOnHover={false}
-        pauseOnFocusLoss={false}
         draggable={false}
         limit={4}
         theme="dark"
         className="eduai-toast-container"
         toastClassName="eduai-toast"
         toastStyle={{ wordBreak: "break-word" }}
+        {...toastOptions}
       />
     </BrowserRouter>
   </StrictMode>,
