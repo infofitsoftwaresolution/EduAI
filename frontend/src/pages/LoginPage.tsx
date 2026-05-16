@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { notifyError, notifySuccess } from "../lib/notify";
 import { motion } from "framer-motion";
 import { Loader2, Lock, Mail, Sparkles, UserPlus, LogIn } from "lucide-react";
 import { cn } from "../lib/utils";
@@ -27,14 +27,14 @@ function LoginPage() {
     try {
       if (mode === "login") {
         await login(email, password);
-        toast.success("Welcome back!");
+        notifySuccess("Welcome back!");
       } else {
         await register(email, password);
-        toast.success("Account created successfully.");
+        notifySuccess("Account created successfully.");
       }
       navigate(isAdmin() ? "/admin" : "/", { replace: true });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Authentication failed");
+      notifyError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
       setSubmitting(false);
     }

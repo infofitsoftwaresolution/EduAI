@@ -12,16 +12,18 @@ createRoot(document.getElementById('root')!).render(
       <App />
       <ToastContainer
         position="top-right"
-        autoClose={2800}
+        autoClose={2200}
         hideProgressBar
         newestOnTop
         closeOnClick
-        pauseOnHover
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
         draggable={false}
         limit={4}
         theme="dark"
         className="eduai-toast-container"
         toastClassName="eduai-toast"
+        toastStyle={{ wordBreak: "break-word" }}
       />
     </BrowserRouter>
   </StrictMode>,

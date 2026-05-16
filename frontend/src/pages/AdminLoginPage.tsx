@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+import { notifyError, notifySuccess } from "../lib/notify";
 import { ArrowLeft, Loader2, Lock, Mail, Shield } from "lucide-react";
 import { cn } from "../lib/utils";
 import { login } from "../services/authService";
@@ -22,13 +22,13 @@ function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
     try {
       await login(email, password);
       if (!isAdmin()) {
-        toast.error("This account is not an admin.");
+        notifyError("This account is not an admin.");
         return;
       }
       onSuccess();
-      toast.success("Signed in to admin console.");
+      notifySuccess("Signed in to admin console.");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Invalid email or password");
+      notifyError(err instanceof Error ? err.message : "Invalid email or password");
     } finally {
       setSubmitting(false);
     }

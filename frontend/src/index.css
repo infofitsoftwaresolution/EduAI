@@ -119,6 +119,12 @@
   padding: 12px 14px;
   min-height: auto;
 }
+.eduai-toast .Toastify__toast-body {
+  max-width: 320px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 .Toastify__progress-bar,
 .Toastify__progress-bar--animated,
 .Toastify__progress-bar--controlled {

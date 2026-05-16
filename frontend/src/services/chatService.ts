@@ -1,4 +1,5 @@
 import { authHeaders } from "../lib/auth";
+import { parseApiError } from "../lib/parseApiError";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
@@ -46,17 +47,6 @@ export interface SessionDetailResponse {
   messages: ChatMessageDto[];
 }
 
-async function parseError(response: Response): Promise<string> {
-  const text = await response.text();
-  try {
-    const j = JSON.parse(text) as { detail?: unknown };
-    if (typeof j.detail === "string") return j.detail;
-  } catch {
-    /* ignore */
-  }
-  return text || `HTTP ${response.status}`;
-}
-
 function jsonHeaders(): HeadersInit {
   return {
     "Content-Type": "application/json",
@@ -68,7 +58,7 @@ export async function listChatSessions(): Promise<ChatSessionMeta[]> {
   const response = await fetch(`${API_BASE_URL}/api/sessions`, {
     headers: { ...authHeaders() },
   });
-  if (!response.ok) throw new Error(await parseError(response));
+  if (!response.ok) throw new Error(await parseApiError(response));
   return response.json();
 }
 
@@ -86,7 +76,7 @@ export async function createChatSession(params?: {
       section_id: params?.section_id ?? null,
     }),
   });
-  if (!response.ok) throw new Error(await parseError(response));
+  if (!response.ok) throw new Error(await parseApiError(response));
   return response.json();
 }
 
@@ -95,7 +85,7 @@ export async function getSessionDetail(sessionId: string): Promise<SessionDetail
     `${API_BASE_URL}/api/sessions/${encodeURIComponent(sessionId)}`,
     { headers: { ...authHeaders() } }
   );
-  if (!response.ok) throw new Error(await parseError(response));
+  if (!response.ok) throw new Error(await parseApiError(response));
   return response.json();
 }
 
@@ -104,7 +94,7 @@ export async function deleteChatSession(sessionId: string): Promise<void> {
     `${API_BASE_URL}/api/sessions/${encodeURIComponent(sessionId)}`,
     { method: "DELETE", headers: { ...authHeaders() } }
   );
-  if (!response.ok) throw new Error(await parseError(response));
+  if (!response.ok) throw new Error(await parseApiError(response));
 }
 
 export async function askQuestion(payload: AskRequest): Promise<AskResponse> {
@@ -115,7 +105,7 @@ export async function askQuestion(payload: AskRequest): Promise<AskResponse> {
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw new Error(await parseApiError(response));
   }
 
   return response.json();
