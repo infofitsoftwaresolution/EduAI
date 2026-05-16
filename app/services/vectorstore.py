@@ -1,8 +1,8 @@
 from langchain_postgres import PGVector
 from app.services.embedder import get_embedder
-from app.config import DATABASE_URL
+from app.config import DATABASE_URL, VECTOR_COLLECTION_NAME
 
-COLLECTION_NAME = "rag_knowledge_base"
+COLLECTION_NAME = VECTOR_COLLECTION_NAME
 
 
 def get_vectorstore():

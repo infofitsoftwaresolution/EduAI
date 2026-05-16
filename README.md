@@ -37,10 +37,10 @@ pip install -r requirements.txt
 Create backend `.env` in project root (use `.env.example` as template):
 
 ```env
-HUGGINGFACEHUB_API_TOKEN=hf_your_new_token
-HF_HOME=D:/Cache/huggingface
-EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
-LLM_MODEL=Qwen/Qwen2.5-72B-Instruct
+OPENAI_API_KEY=sk_your_openai_key
+LLM_MODEL=gpt-5.4-mini
+EMBEDDING_MODEL=text-embedding-3-small
+VECTOR_COLLECTION_NAME=rag_knowledge_base_openai
 DATABASE_URL=postgresql://user:password@host:5432/dbname
 
 FRONTEND_ORIGINS=http://localhost:5173

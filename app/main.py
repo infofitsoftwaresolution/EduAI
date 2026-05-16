@@ -33,7 +33,7 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(
     title="RAG System API",
-    description="Knowledge base ingestion and retrieval using LangChain + HuggingFace",
+    description="Knowledge base ingestion and retrieval using LangChain + OpenAI",
     version="1.0.0",
     lifespan=lifespan,
 )

@@ -3,9 +3,11 @@ import os
 
 load_dotenv()
 
-HUGGINGFACEHUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-LLM_MODEL = os.getenv("LLM_MODEL", "Qwen/Qwen2.5-72B-Instruct")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
+LLM_MODEL = os.getenv("LLM_MODEL", "gpt-5.4-mini")
+# New collection when switching embed models (HF MiniLM 384-dim → OpenAI 1536-dim).
+VECTOR_COLLECTION_NAME = os.getenv("VECTOR_COLLECTION_NAME", "rag_knowledge_base_openai")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 JWT_SECRET = os.getenv("JWT_SECRET", "change-me-in-production-use-long-random-string")
