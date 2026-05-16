@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ArrowLeft, Loader2, Lock, Mail, UserPlus, LogIn } from "lucide-react";
+import { motion } from "framer-motion";
+import { Loader2, Lock, Mail, Sparkles, UserPlus, LogIn } from "lucide-react";
 import { cn } from "../lib/utils";
 import { login, register } from "../services/authService";
-import { isAdmin } from "../lib/auth";
+import { isAdmin, isAuthenticated } from "../lib/auth";
+import { FadeIn, PageMotion } from "../components/ui/PageMotion";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -13,6 +15,11 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (!isAuthenticated()) return;
+    navigate(isAdmin() ? "/admin" : "/", { replace: true });
+  }, [navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
@@ -20,16 +27,12 @@ function LoginPage() {
     try {
       if (mode === "login") {
         await login(email, password);
-        toast.success("Signed in.");
+        toast.success("Welcome back!");
       } else {
         await register(email, password);
-        toast.success("Account created.");
+        toast.success("Account created successfully.");
       }
-      if (isAdmin()) {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      navigate(isAdmin() ? "/admin" : "/", { replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Authentication failed");
     } finally {
@@ -38,108 +41,158 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#050505] text-foreground dark flex-col relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
-      <header className="relative z-10 h-16 glass border-b px-4 flex items-center">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-muted/20 px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Home
-        </Link>
-      </header>
+    <div className="min-h-screen bg-[#030303] text-foreground flex relative overflow-hidden">
+      <motion.div
+        className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-600/20 blur-[120px]"
+        animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.5, 0.35] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute bottom-[-15%] left-[-10%] w-[500px] h-[500px] rounded-full bg-purple-600/15 blur-[100px]"
+        animate={{ scale: [1.05, 1, 1.05], opacity: [0.25, 0.4, 0.25] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      />
 
-      <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md">
-          <h1 className="text-center text-xl font-bold">Student sign in</h1>
-          <p className="text-center text-sm text-muted-foreground mt-2">
-            Your chats are saved to your account and restore after refresh.
+      <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16 xl:px-24 border-r border-white/5">
+        <FadeIn>
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center ai-glow">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-2xl font-bold ai-gradient-text">EduAI</span>
+          </div>
+          <h1 className="text-4xl xl:text-5xl font-bold leading-tight tracking-tight">
+            Learn smarter with
+            <br />
+            <span className="ai-gradient-text">your course AI</span>
+          </h1>
+          <p className="mt-5 text-muted-foreground text-lg max-w-md leading-relaxed">
+            Ask questions from your uploaded materials. Chats are saved to your account and sync across sessions.
           </p>
+          <ul className="mt-10 space-y-3 text-sm text-muted-foreground">
+            {["Course-scoped answers with sources", "Persistent chat history", "Secure student accounts"].map(
+              (item, i) => (
+                <motion.li
+                  key={item}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + i * 0.08 }}
+                  className="flex items-center gap-2"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                  {item}
+                </motion.li>
+              )
+            )}
+          </ul>
+        </FadeIn>
+      </div>
 
-          <div className="mt-6 flex rounded-xl border border-white/10 p-1 bg-muted/20">
-            <button
-              type="button"
-              onClick={() => setMode("login")}
-              className={cn(
-                "flex-1 py-2 text-sm rounded-lg transition-colors",
-                mode === "login" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
-              )}
-            >
-              Sign in
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode("register")}
-              className={cn(
-                "flex-1 py-2 text-sm rounded-lg transition-colors",
-                mode === "register" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
-              )}
-            >
-              Register
-            </button>
+      <div className="flex-1 flex items-center justify-center p-6 relative z-10">
+        <PageMotion className="w-full max-w-[420px]">
+          <div className="lg:hidden flex justify-center mb-8">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center ai-glow">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+          </div>
+
+          <div className="text-center lg:text-left mb-8">
+            <h2 className="text-2xl font-bold">{mode === "login" ? "Sign in" : "Create account"}</h2>
+            <p className="text-sm text-muted-foreground mt-2">
+              {mode === "login"
+                ? "Use your email and password. Admins are routed to the dashboard automatically."
+                : "Register as a student to start learning with EduAI."}
+            </p>
+          </div>
+
+          <div className="flex p-1 rounded-xl bg-white/5 border border-white/10 mb-6">
+            {(["login", "register"] as const).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setMode(tab)}
+                className={cn(
+                  "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all",
+                  mode === tab
+                    ? "bg-white text-black shadow-lg"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {tab === "login" ? "Sign in" : "Register"}
+              </button>
+            ))}
           </div>
 
           <form
             onSubmit={(e) => void handleSubmit(e)}
-            className="mt-4 rounded-2xl glass-card border-white/10 p-6 space-y-4"
+            className="rounded-2xl border border-white/10 bg-card/30 backdrop-blur-xl p-6 sm:p-8 space-y-5 shadow-2xl shadow-black/40"
           >
-            <div>
-              <label className="text-xs font-semibold text-muted-foreground uppercase">Email</label>
-              <div className="relative mt-2">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-xs font-medium text-muted-foreground">
+                Email address
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
+                  id="email"
                   type="email"
+                  autoComplete="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-background/50 pl-10 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                  placeholder="you@university.edu"
+                  className="w-full rounded-xl border border-white/10 bg-black/40 pl-10 pr-4 py-3 text-sm outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                   disabled={submitting}
                 />
               </div>
             </div>
-            <div>
-              <label className="text-xs font-semibold text-muted-foreground uppercase">Password</label>
-              <div className="relative mt-2">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-xs font-medium text-muted-foreground">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
+                  id="password"
                   type="password"
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
                   required
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-background/50 pl-10 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                  placeholder="••••••••"
+                  className="w-full rounded-xl border border-white/10 bg-black/40 pl-10 pr-4 py-3 text-sm outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                   disabled={submitting}
                 />
               </div>
+              {mode === "register" && (
+                <p className="text-[11px] text-muted-foreground">Minimum 6 characters</p>
+              )}
             </div>
+
             <button
               type="submit"
               disabled={submitting}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-medium bg-primary text-primary-foreground hover:opacity-90 ai-glow disabled:opacity-50"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:opacity-95 ai-glow disabled:opacity-50 transition-opacity"
             >
               {submitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : mode === "login" ? (
                 <>
-                  <LogIn className="w-4 h-4" /> Sign in
+                  <LogIn className="w-4 h-4" />
+                  Continue
                 </>
               ) : (
                 <>
-                  <UserPlus className="w-4 h-4" /> Create account
+                  <UserPlus className="w-4 h-4" />
+                  Create account
                 </>
               )}
             </button>
           </form>
-
-          <p className="text-center text-xs text-muted-foreground mt-4">
-            Admin?{" "}
-            <Link to="/admin" className="text-indigo-400 hover:underline">
-              Admin sign in
-            </Link>
-          </p>
-        </div>
-      </main>
+        </PageMotion>
+      </div>
     </div>
   );
 }

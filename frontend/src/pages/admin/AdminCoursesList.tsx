@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 import AdminLayout from "../../components/admin/AdminLayout";
+import { Skeleton } from "../../components/ui/Skeleton";
+import { PageMotion } from "../../components/ui/PageMotion";
 import { cn } from "../../lib/utils";
 import { createCourse, listCourses, type Course } from "../../services/adminService";
 import { BookOpen, FolderPlus, Layers, Loader2, FileText } from "lucide-react";
@@ -52,7 +55,7 @@ function AdminCoursesList({ onLogout }: AdminCoursesListProps) {
 
   return (
     <AdminLayout onLogout={onLogout} title="My courses" subtitle="Select a course to manage modules and knowledge">
-      <div className="max-w-5xl mx-auto space-y-6">
+      <PageMotion className="max-w-5xl mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold">Courses</h2>
@@ -99,8 +102,10 @@ function AdminCoursesList({ onLogout }: AdminCoursesListProps) {
         )}
 
         {loading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-36 rounded-2xl" />
+            ))}
           </div>
         ) : courses.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/15 p-12 text-center">
@@ -109,11 +114,16 @@ function AdminCoursesList({ onLogout }: AdminCoursesListProps) {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {courses.map((c) => (
-              <Link
+            {courses.map((c, index) => (
+              <motion.div
                 key={c.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05, duration: 0.35 }}
+              >
+              <Link
                 to={`/admin/course/${c.id}`}
-                className="group rounded-2xl glass-card border-white/10 p-5 hover:border-indigo-500/40 hover:bg-indigo-500/5 transition-all"
+                className="group block rounded-2xl glass-card border-white/10 p-5 hover:border-indigo-500/40 hover:bg-indigo-500/5 transition-all"
               >
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center shrink-0">
@@ -137,10 +147,11 @@ function AdminCoursesList({ onLogout }: AdminCoursesListProps) {
                 </div>
                 <p className="text-xs text-indigo-400/80 mt-4">Open course →</p>
               </Link>
+              </motion.div>
             ))}
           </div>
         )}
-      </div>
+      </PageMotion>
     </AdminLayout>
   );
 }

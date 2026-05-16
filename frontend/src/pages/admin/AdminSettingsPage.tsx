@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import AdminLayout from "../../components/admin/AdminLayout";
+import { PageMotion } from "../../components/ui/PageMotion";
 import { cn } from "../../lib/utils";
 import {
   fetchHealth,
@@ -44,7 +45,7 @@ function AdminSettingsPage({ onLogout }: AdminSettingsPageProps) {
       backTo="/admin"
       backLabel="Courses"
     >
-      <div className="max-w-2xl mx-auto space-y-6">
+      <PageMotion className="max-w-2xl mx-auto space-y-6">
         <section className="rounded-2xl glass-card border-white/10 p-5 sm:p-6">
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">API base URL</p>
           <p className="mt-2 font-mono text-sm text-indigo-200/90 break-all">{apiBase}</p>
@@ -127,7 +128,7 @@ function AdminSettingsPage({ onLogout }: AdminSettingsPageProps) {
             {apiBase}/docs
           </a>
         </p>
-      </div>
+      </PageMotion>
     </AdminLayout>
   );
 }

@@ -12,13 +12,16 @@ createRoot(document.getElementById('root')!).render(
       <App />
       <ToastContainer
         position="top-right"
-        autoClose={2500}
-        hideProgressBar={false}
+        autoClose={2800}
+        hideProgressBar
         newestOnTop
         closeOnClick
         pauseOnHover
-        draggable
+        draggable={false}
+        limit={4}
         theme="dark"
+        className="eduai-toast-container"
+        toastClassName="eduai-toast"
       />
     </BrowserRouter>
   </StrictMode>,

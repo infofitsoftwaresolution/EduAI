@@ -1,5 +1,6 @@
 import { useChatStore } from "../../store/useChatStore";
 import { cn } from "../../lib/utils";
+import { isAdmin } from "../../lib/auth";
 import { Link } from "react-router-dom";
 import {
   MessageSquare,
@@ -221,19 +222,21 @@ const Sidebar = ({
           </div>
         </div>
 
-        <div className="px-3 md:px-4 pb-3 md:pb-4">
-          <Link
-            to="/admin"
-            className={cn(
-              "w-full flex items-center gap-3 p-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 text-indigo-100 hover:bg-indigo-500/15 hover:border-indigo-500/35 transition-colors",
-              !isSidebarOpen && "md:justify-center"
-            )}
-            title="Admin panel"
-          >
-            <Shield className="w-5 h-5 text-indigo-300 shrink-0" />
-            {isSidebarOpen && <span className="text-sm font-medium">Admin panel</span>}
-          </Link>
-        </div>
+        {isAdmin() && (
+          <div className="px-3 md:px-4 pb-3 md:pb-4">
+            <Link
+              to="/admin"
+              className={cn(
+                "w-full flex items-center gap-3 p-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 text-indigo-100 hover:bg-indigo-500/15 hover:border-indigo-500/35 transition-colors",
+                !isSidebarOpen && "md:justify-center"
+              )}
+              title="Admin dashboard"
+            >
+              <Shield className="w-5 h-5 text-indigo-300 shrink-0" />
+              {isSidebarOpen && <span className="text-sm font-medium">Admin dashboard</span>}
+            </Link>
+          </div>
+        )}
 
         {/* Desktop-only collapse toggle */}
         <div className="hidden md:block p-4 border-t border-white/5">

@@ -106,3 +106,30 @@
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+/* Toast — no progress bar, compact industry style */
+.eduai-toast-container {
+  width: auto !important;
+  max-width: min(360px, calc(100vw - 2rem));
+}
+.eduai-toast {
+  @apply rounded-xl border border-white/10 shadow-xl shadow-black/40 backdrop-blur-md;
+  font-family: inherit;
+  font-size: 0.875rem;
+  padding: 12px 14px;
+  min-height: auto;
+}
+.Toastify__progress-bar,
+.Toastify__progress-bar--animated,
+.Toastify__progress-bar--controlled {
+  display: none !important;
+}
+.Toastify__toast--success.eduai-toast {
+  @apply bg-emerald-950/90 text-emerald-50;
+}
+.Toastify__toast--error.eduai-toast {
+  @apply bg-red-950/90 text-red-50;
+}
+.Toastify__toast--info.eduai-toast {
+  @apply bg-indigo-950/90 text-indigo-50;
+}

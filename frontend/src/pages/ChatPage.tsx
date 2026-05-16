@@ -13,8 +13,9 @@ import {
   listChatSessions,
   type ChatSessionMeta,
 } from "../services/chatService";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
+import ChatPageSkeleton from "../components/chat/ChatPageSkeleton";
 
 const ACTIVE_SESSION_KEY = "rag_active_session_id";
 
@@ -270,15 +271,16 @@ function ChatPage() {
   };
 
   if (bootstrapping) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[#050505] text-muted-foreground">
-        Loading your chats…
-      </div>
-    );
+    return <ChatPageSkeleton />;
   }
 
   return (
-    <div className="flex h-screen bg-[#050505] text-foreground overflow-hidden dark">
+    <motion.div
+      className="flex h-screen bg-[#050505] text-foreground overflow-hidden dark"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <Sidebar
         recentSessions={recentSessions}
         currentSessionId={currentSessionId ?? ""}
@@ -318,7 +320,7 @@ function ChatPage() {
         </div>
         <ChatInput onSend={handleSendMessage} isLoading={isLoading} />
       </main>
-    </div>
+    </motion.div>
   );
 }
 

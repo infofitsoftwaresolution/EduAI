@@ -16,6 +16,7 @@ import {
   type Asset,
   type Section,
 } from "../../services/adminService";
+import { PageMotion } from "../../components/ui/PageMotion";
 import {
   ExternalLink,
   FileUp,
@@ -229,7 +230,7 @@ function AdminCourseWorkspace({ onLogout }: AdminCourseWorkspaceProps) {
       backTo="/admin"
       backLabel="Courses"
     >
-      <div className="max-w-6xl mx-auto space-y-4">
+      <PageMotion className="max-w-6xl mx-auto space-y-4">
         <div className="flex flex-wrap gap-2 justify-end">
           <a
             href={previewUrl}
@@ -481,7 +482,7 @@ function AdminCourseWorkspace({ onLogout }: AdminCourseWorkspaceProps) {
             )}
           </main>
         </div>
-      </div>
+      </PageMotion>
     </AdminLayout>
   );
 }
