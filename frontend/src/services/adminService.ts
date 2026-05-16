@@ -1,4 +1,16 @@
+import { authHeaders } from "../lib/auth";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+
+function apiInit(init?: RequestInit): RequestInit {
+  return {
+    ...init,
+    headers: {
+      ...(init?.headers as Record<string, string> | undefined),
+      ...authHeaders(),
+    },
+  };
+}
 
 export function getApiBaseUrl(): string {
   return API_BASE_URL;
@@ -65,7 +77,7 @@ async function parseError(response: Response): Promise<string> {
 
 export async function fetchHealth(): Promise<HealthCheckResult> {
   const started = performance.now();
-  const response = await fetch(`${API_BASE_URL}/health`, { method: "GET" });
+  const response = await fetch(`${API_BASE_URL}/health`, apiInit({ method: "GET" }));
   const latencyMs = Math.round(performance.now() - started);
   if (!response.ok) {
     throw new Error(`Health check failed (${response.status}): ${await parseError(response)}`);
@@ -75,7 +87,7 @@ export async function fetchHealth(): Promise<HealthCheckResult> {
 }
 
 export async function fetchRoot(): Promise<Record<string, unknown>> {
-  const response = await fetch(`${API_BASE_URL}/`, { method: "GET" });
+  const response = await fetch(`${API_BASE_URL}/`, apiInit({ method: "GET" }));
   if (!response.ok) {
     throw new Error(`Root check failed (${response.status}): ${await parseError(response)}`);
   }
@@ -83,37 +95,45 @@ export async function fetchRoot(): Promise<Record<string, unknown>> {
 }
 
 export async function listCourses(): Promise<Course[]> {
-  const response = await fetch(`${API_BASE_URL}/courses`);
+  const response = await fetch(`${API_BASE_URL}/courses`, apiInit());
   if (!response.ok) throw new Error(await parseError(response));
   return response.json();
 }
 
 export async function createCourse(title: string, description?: string): Promise<Course> {
-  const response = await fetch(`${API_BASE_URL}/courses`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, description: description || null }),
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/courses`,
+    apiInit({
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, description: description || null }),
+    })
+  );
   if (!response.ok) throw new Error(await parseError(response));
   return response.json();
 }
 
 export async function getCourse(courseId: string): Promise<CourseDetailResponse> {
-  const response = await fetch(`${API_BASE_URL}/courses/${encodeURIComponent(courseId)}`);
+  const response = await fetch(
+    `${API_BASE_URL}/courses/${encodeURIComponent(courseId)}`,
+    apiInit()
+  );
   if (!response.ok) throw new Error(await parseError(response));
   return response.json();
 }
 
 export async function deleteCourse(courseId: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/courses/${encodeURIComponent(courseId)}`, {
-    method: "DELETE",
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/courses/${encodeURIComponent(courseId)}`,
+    apiInit({ method: "DELETE" })
+  );
   if (!response.ok) throw new Error(await parseError(response));
 }
 
 export async function listSections(courseId: string): Promise<Section[]> {
   const response = await fetch(
-    `${API_BASE_URL}/courses/${encodeURIComponent(courseId)}/sections`
+    `${API_BASE_URL}/courses/${encodeURIComponent(courseId)}/sections`,
+    apiInit()
   );
   if (!response.ok) throw new Error(await parseError(response));
   return response.json();
@@ -126,11 +146,11 @@ export async function createSection(
 ): Promise<Section> {
   const response = await fetch(
     `${API_BASE_URL}/courses/${encodeURIComponent(courseId)}/sections`,
-    {
+    apiInit({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, position }),
-    }
+    })
   );
   if (!response.ok) throw new Error(await parseError(response));
   return response.json();
@@ -139,14 +159,15 @@ export async function createSection(
 export async function deleteSection(courseId: string, sectionId: string): Promise<void> {
   const response = await fetch(
     `${API_BASE_URL}/courses/${encodeURIComponent(courseId)}/sections/${encodeURIComponent(sectionId)}`,
-    { method: "DELETE" }
+    apiInit({ method: "DELETE" })
   );
   if (!response.ok) throw new Error(await parseError(response));
 }
 
 export async function listAssets(courseId: string, sectionId: string): Promise<Asset[]> {
   const response = await fetch(
-    `${API_BASE_URL}/courses/${encodeURIComponent(courseId)}/sections/${encodeURIComponent(sectionId)}/assets`
+    `${API_BASE_URL}/courses/${encodeURIComponent(courseId)}/sections/${encodeURIComponent(sectionId)}/assets`,
+    apiInit()
   );
   if (!response.ok) throw new Error(await parseError(response));
   return response.json();
@@ -161,7 +182,7 @@ export async function ingestFileToSection(
   form.append("file", file);
   const response = await fetch(
     `${API_BASE_URL}/courses/${encodeURIComponent(courseId)}/sections/${encodeURIComponent(sectionId)}/assets/file`,
-    { method: "POST", body: form }
+    apiInit({ method: "POST", body: form })
   );
   if (!response.ok) throw new Error(await parseError(response));
   return response.json();
@@ -174,11 +195,11 @@ export async function ingestUrlToSection(
 ): Promise<IngestAssetResponse> {
   const response = await fetch(
     `${API_BASE_URL}/courses/${encodeURIComponent(courseId)}/sections/${encodeURIComponent(sectionId)}/assets/url`,
-    {
+    apiInit({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url: url.trim() }),
-    }
+    })
   );
   if (!response.ok) throw new Error(await parseError(response));
   return response.json();
@@ -191,7 +212,7 @@ export async function deleteAsset(
 ): Promise<void> {
   const response = await fetch(
     `${API_BASE_URL}/courses/${encodeURIComponent(courseId)}/sections/${encodeURIComponent(sectionId)}/assets/${encodeURIComponent(assetId)}`,
-    { method: "DELETE" }
+    apiInit({ method: "DELETE" })
   );
   if (!response.ok) throw new Error(await parseError(response));
 }

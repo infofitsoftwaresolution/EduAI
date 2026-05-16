@@ -1,8 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../../store/useChatStore";
-import { Bell, Menu, Moon, Share2, Sun, User, Zap } from "lucide-react";
+import { clearAuth, getStoredUser } from "../../lib/auth";
+import { Bell, LogOut, Menu, Moon, Share2, Sun, User, Zap } from "lucide-react";
 
 const TopHeader = () => {
+  const navigate = useNavigate();
   const { currentTopic, toggleSidebar } = useChatStore();
+  const user = getStoredUser();
 
   return (
     <header className="h-16 md:h-20 glass border-b px-3 md:px-8 flex items-center justify-between sticky top-0 z-40">
@@ -79,12 +83,20 @@ const TopHeader = () => {
 
         <button
           type="button"
-          className="flex items-center gap-2 pl-1.5 pr-2 sm:pr-4 py-1.5 rounded-2xl bg-primary text-primary-foreground hover:opacity-90 transition-all ai-glow"
+          onClick={() => {
+            clearAuth();
+            navigate("/login");
+          }}
+          className="flex items-center gap-2 pl-1.5 pr-2 sm:pr-4 py-1.5 rounded-2xl border border-white/10 bg-muted/30 hover:bg-muted/50 transition-all"
+          title="Sign out"
         >
-          <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center">
             <User className="w-4 h-4" />
           </div>
-          <span className="hidden sm:inline text-sm font-medium">Profile</span>
+          <span className="hidden sm:inline text-sm font-medium truncate max-w-[120px]">
+            {user?.email?.split("@")[0] ?? "Sign out"}
+          </span>
+          <LogOut className="w-4 h-4 hidden sm:block text-muted-foreground" />
         </button>
       </div>
     </header>

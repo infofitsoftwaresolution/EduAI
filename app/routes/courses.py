@@ -5,6 +5,8 @@ import uuid
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+
+from app.auth.deps import require_admin
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -16,7 +18,7 @@ from app.services.splitter import split_documents
 from app.services.vector_cleanup import delete_embeddings_for_course_id, delete_embeddings_for_document_ids
 from app.services.vectorstore import get_vectorstore
 
-router = APIRouter(prefix="/courses", tags=["Courses"])
+router = APIRouter(prefix="/courses", tags=["Courses"], dependencies=[Depends(require_admin)])
 
 # Local object storage; same relative paths can later map to S3 keys.
 UPLOAD_DIR = "./data"

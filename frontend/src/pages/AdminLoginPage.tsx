@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ArrowLeft, Loader2, Lock, Mail, Shield } from "lucide-react";
 import { cn } from "../lib/utils";
-import { validateAdminCredentials } from "../lib/adminAuth";
+import { login } from "../services/authService";
+import { isAdmin } from "../lib/auth";
 
 interface AdminLoginPageProps {
   onSuccess: () => void;
@@ -14,17 +15,20 @@ function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
     setSubmitting(true);
     try {
-      if (validateAdminCredentials(email, password)) {
-        onSuccess();
-        toast.success("Signed in to admin console.");
-      } else {
-        toast.error("Invalid email or password.");
+      await login(email, password);
+      if (!isAdmin()) {
+        toast.error("This account is not an admin.");
+        return;
       }
+      onSuccess();
+      toast.success("Signed in to admin console.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Invalid email or password");
     } finally {
       setSubmitting(false);
     }
@@ -33,7 +37,6 @@ function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
   return (
     <div className="flex min-h-screen bg-[#050505] text-foreground dark flex-col relative overflow-hidden">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/5 blur-[120px] rounded-full pointer-events-none" />
 
       <header className="relative z-10 h-16 md:h-20 glass border-b px-3 md:px-8 flex items-center">
         <Link
@@ -42,7 +45,6 @@ function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="hidden sm:inline">Back to assistant</span>
-          <span className="sm:hidden">Back</span>
         </Link>
       </header>
 
@@ -55,11 +57,11 @@ function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
           </div>
           <h1 className="text-center text-xl font-bold tracking-tight">Admin sign-in</h1>
           <p className="text-center text-sm text-muted-foreground mt-2">
-            Enter admin credentials to manage the knowledge base.
+            Use your admin account (seeded from server <span className="font-mono text-xs">ADMIN_EMAIL</span>).
           </p>
 
           <form
-            onSubmit={handleSubmit}
+            onSubmit={(e) => void handleSubmit(e)}
             className="mt-6 md:mt-8 rounded-2xl glass-card border-white/10 p-5 sm:p-6 md:p-8 space-y-5"
           >
             <div>
@@ -74,19 +76,19 @@ function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
                   autoComplete="username"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-background/50 pl-10 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40 placeholder:text-muted-foreground/50"
-                  placeholder="admin@example.com"
+                  className="w-full rounded-xl border border-white/10 bg-background/50 pl-10 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                  placeholder="admin@eduai.local"
                   disabled={submitting}
                   required
                 />
               </div>
             </div>
 
-            <div>
+            <div className="space-y-2">
               <label htmlFor="admin-password" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Password
               </label>
-              <div className="relative mt-2">
+              <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   id="admin-password"
@@ -94,8 +96,7 @@ function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-background/50 pl-10 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40 placeholder:text-muted-foreground/50"
-                  placeholder="••••••••"
+                  className="w-full rounded-xl border border-white/10 bg-background/50 pl-10 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
                   disabled={submitting}
                   required
                 />
@@ -107,7 +108,9 @@ function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
               disabled={submitting}
               className={cn(
                 "w-full inline-flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-medium transition-all ai-glow",
-                submitting ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground hover:opacity-90"
+                submitting
+                  ? "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-primary text-primary-foreground hover:opacity-90"
               )}
             >
               {submitting ? (

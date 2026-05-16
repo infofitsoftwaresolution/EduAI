@@ -8,6 +8,14 @@ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM
 LLM_MODEL = os.getenv("LLM_MODEL", "Qwen/Qwen2.5-72B-Instruct")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+JWT_SECRET = os.getenv("JWT_SECRET", "change-me-in-production-use-long-random-string")
+JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "10080"))  # 7 days
+
+# Default admin seeded on startup if no user with this email exists
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@eduai.local")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "EduAI_Admin_2026")
+
 
 def _parse_csv_env(value: str | None) -> list[str]:
     if not value:

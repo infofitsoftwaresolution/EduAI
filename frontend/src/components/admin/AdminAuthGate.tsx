@@ -4,13 +4,12 @@ import AdminLoginPage from "../../pages/AdminLoginPage";
 import AdminCoursesList from "../../pages/admin/AdminCoursesList";
 import AdminCourseWorkspace from "../../pages/admin/AdminCourseWorkspace";
 import AdminSettingsPage from "../../pages/admin/AdminSettingsPage";
-import { clearAdminSession, isAdminSession, setAdminSession } from "../../lib/adminAuth";
+import { clearAdminSession, isAdminSession } from "../../lib/adminAuth";
 
 function AdminAuthGate() {
   const [authed, setAuthed] = useState(() => isAdminSession());
 
   const handleLoginSuccess = useCallback(() => {
-    setAdminSession();
     setAuthed(true);
   }, []);
 
