@@ -87,7 +87,7 @@ async def ask_question(
             search_kwargs["filter"] = filt
 
         retriever = vs.as_retriever(
-            search_type="mmr",
+            search_type="similarity",
             search_kwargs=search_kwargs,
         )
 

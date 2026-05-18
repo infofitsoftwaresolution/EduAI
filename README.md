@@ -3,7 +3,11 @@
 This project contains:
 - **Backend**: FastAPI + LangChain RAG pipeline (`app/`, `run.py`)
 - **Frontend**: React + Vite chat UI (`frontend/`)
-- **Vector DB**: PGVector via `DATABASE_URL`
+- **App DB**: PostgreSQL via `DATABASE_URL`
+- **Vector/Search DB**: Elasticsearch via `ELASTICSEARCH_URL`
+
+For local Docker Compose setup with PostgreSQL and Elasticsearch, see `DOCKER_LOCAL.md`.
+For the beginner EC2 production flow on Amazon Linux, see `EC2_DEPLOYMENT.md`.
 
 ## 1) Prerequisites
 
@@ -41,6 +45,9 @@ OPENAI_API_KEY=sk_your_openai_key
 LLM_MODEL=gpt-5.4-mini
 EMBEDDING_MODEL=text-embedding-3-small
 VECTOR_COLLECTION_NAME=rag_knowledge_base_openai
+ELASTICSEARCH_INDEX_NAME=rag_knowledge_base_openai
+ELASTICSEARCH_URL=http://localhost:9200
+EMBEDDING_DIMENSIONS=1536
 DATABASE_URL=postgresql://user:password@host:5432/dbname
 
 FRONTEND_ORIGINS=http://localhost:5173
@@ -48,7 +55,8 @@ ALLOW_LOCALHOST_CORS=true
 ```
 
 Notes:
-- This project uses **Postgres/PGVector** (`DATABASE_URL`) for vector storage.
+- This project uses **PostgreSQL** (`DATABASE_URL`) for users/courses/assets/chat.
+- This project uses **Elasticsearch** (`ELASTICSEARCH_URL`) for RAG chunks, embeddings, and vector search.
 - Share real token and DB URL privately (do not commit them).
 
 Run backend:

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.config import DATABASE_URL
 
 if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL is required for LMS tables and PGVector.")
+    raise RuntimeError("DATABASE_URL is required for users, courses, assets, and chat tables.")
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
