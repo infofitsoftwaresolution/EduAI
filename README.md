@@ -8,6 +8,7 @@ This project contains:
 
 For local Docker Compose setup with PostgreSQL and Elasticsearch, see `DOCKER_LOCAL.md`.
 For the beginner EC2 production flow on Amazon Linux, see `EC2_DEPLOYMENT.md`.
+For CI/CD (GitHub Actions deploy) and HTTPS notes, see `CI_CD.md`.
 
 ## 1) Prerequisites
 
