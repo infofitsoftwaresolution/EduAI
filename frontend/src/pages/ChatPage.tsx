@@ -150,14 +150,16 @@ function ChatPage() {
   }, [courseId, sectionId, loadSessionMessages, navigate, refreshSessionList]);
 
   const handleSendMessage = async (content: string) => {
-    if (!currentSessionId) return;
-    addMessage({ role: "user", content });
+    const trimmed = content.trim();
+    if (!trimmed || !currentSessionId || isLoading) return;
+
+    addMessage({ role: "user", content: trimmed });
     setLoading(true);
     setErrorMessage("");
 
     try {
       const result = await askQuestion({
-        question: content,
+        question: trimmed,
         session_id: currentSessionId,
         top_k: 4,
         ...(courseId ? { course_id: courseId } : {}),
