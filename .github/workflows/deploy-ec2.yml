@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - master
 
 jobs:
   deploy:
@@ -18,10 +19,21 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
-            cd ~/rag-system
-            git pull origin main
+            APP_DIR="${{ secrets.EC2_APP_DIR }}"
+            if [ -z "$APP_DIR" ]; then
+              if [ -d ~/EduAI ]; then
+                APP_DIR=~/EduAI
+              elif [ -d ~/rag-system ]; then
+                APP_DIR=~/rag-system
+              else
+                echo "ERROR: No ~/EduAI or ~/rag-system folder on EC2."
+                echo "SSH in and run: git clone https://github.com/YOUR_USER/EduAI.git ~/EduAI"
+                exit 1
+              fi
+            fi
+            cd "$APP_DIR"
             chmod +x scripts/deploy-ec2.sh
-            APP_DIR=~/rag-system ./scripts/deploy-ec2.sh
+            ./scripts/deploy-ec2.sh
 
       - name: Verify public health endpoint
         run: |

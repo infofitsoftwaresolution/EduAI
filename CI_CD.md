@@ -58,10 +58,32 @@ Goal: when you push to `main`, GitHub automatically SSHs into EC2, pulls code, a
 
 Your code must be on GitHub (private repo is fine).
 
-#### 2. On EC2 — make sure git remote is GitHub
+#### 2. On EC2 — clone the repo (required once)
+
+CI/CD looks for the project at **`~/EduAI`** first, then **`~/rag-system`**.
+
+Local folder name (`rag-system`) and GitHub repo name (`EduAI`) can differ — only the **EC2 folder path** matters.
+
+If the folder does not exist, clone it:
 
 ```bash
-cd ~/rag-system
+cd ~
+git clone https://github.com/YOUR_ORG/EduAI.git EduAI
+cd EduAI
+```
+
+Optional GitHub secret **`EC2_APP_DIR`**: set to `/home/ec2-user/EduAI` if your path is different.
+
+Check:
+
+```bash
+ls ~/EduAI/docker-compose.prod.yml
+```
+
+#### 2b. Make sure git remote is GitHub
+
+```bash
+cd ~/EduAI
 git remote -v
 ```
 
@@ -153,4 +175,4 @@ APP_DIR=~/rag-system ~/rag-system/scripts/deploy-ec2.sh
 
 ## Branch name
 
-Workflow deploys on push to **`main`**. If your default branch is `master`, rename it or edit `.github/workflows/deploy-ec2.yml`.
+Workflow deploys on push to **`main`** or **`master`**. The deploy script pulls whichever branch exists on `origin`.
