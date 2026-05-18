@@ -73,11 +73,17 @@ git remote set-url origin https://github.com/YOUR_ORG/rag-system.git
 
 For private repos, set up a GitHub deploy key or personal access token on EC2.
 
-#### 3. Make deploy script executable (once)
+#### 3. First-time sync (if CI/CD failed with "deploy-ec2.sh: No such file")
+
+SSH into EC2 and run:
 
 ```bash
-chmod +x ~/rag-system/scripts/deploy-ec2.sh
+cd ~/rag-system
+git pull origin main
+chmod +x scripts/deploy-ec2.sh
 ```
+
+This downloads `scripts/deploy-ec2.sh` from GitHub onto the server.
 
 #### 4. EC2 security group — allow GitHub Actions to SSH
 
